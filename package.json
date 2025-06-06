@@ -1,0 +1,17 @@
+{
+  "name": "yelpcamp",
+  "version": "1.0.0",
+  "description": "Code along final project for the bootcamp [Web Developer Bootcamp by Colt Steele - Udemy](https://www.udemy.com/course/the-web-developer-bootcamp).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1"
+  }
+}
