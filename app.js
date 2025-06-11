@@ -1,7 +1,7 @@
 const express = require("express"); // Import the Express framework
 const path = require("path"); // Node module to handle file paths
 const mongoose = require("mongoose"); // Import Mongoose, an ODM library for MongoDB
-const engine = require("ejs-mate") // Import ejs-mate, Express 4.x layout, partial template functions for the EJS template engine.
+const engine = require("ejs-mate") // Import ejs-mate, Express 4.x layout, partial template functions for the EJS template engine. Docs: https://github.com/JacksonTian/ejs-mate
 const methodOverride = require("method-override"); // Import method-override to enable HTTP verbs like PUT and DELETE in forms
 const Campground = require("./models/campground"); // Import the Campground model
 
@@ -19,6 +19,7 @@ db.once("open", () => {
 const app = express();
 
 // Configuration
+app.engine('ejs', engine)  // Use ejs-mate as the rendering engine for EJS templates
 app.set("view engine", "ejs"); // Set EJS as the templating engine
 app.set("views", path.join(__dirname, "views")); // Define the folder where the views are located
 
