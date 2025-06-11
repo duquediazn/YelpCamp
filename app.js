@@ -26,6 +26,9 @@ app.set("views", path.join(__dirname, "views")); // Define the folder where the 
 app.use(express.urlencoded({ extended: true })); // Use middleware to parse URL-encoded data (like form submissions)
 app.use(methodOverride("_method")); // Use method-override to interpret the "_method" query parameter as the actual HTTP method
 
+// npm i bootstrap@5.3.6 (latest version 11/06/25)
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist'))); // Serve Bootstrap's CSS and JS files from node_modules at the /bootstrap URL path
+
 // Routes
 app.get("/", (req, res) => {
   // Main route, welcome message
