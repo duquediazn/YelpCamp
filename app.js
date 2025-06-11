@@ -1,6 +1,7 @@
 const express = require("express"); // Import the Express framework
 const path = require("path"); // Node module to handle file paths
 const mongoose = require("mongoose"); // Import Mongoose, an ODM library for MongoDB
+const engine = require("ejs-mate") // Import ejs-mate, Express 4.x layout, partial template functions for the EJS template engine.
 const methodOverride = require("method-override"); // Import method-override to enable HTTP verbs like PUT and DELETE in forms
 const Campground = require("./models/campground"); // Import the Campground model
 
@@ -70,6 +71,7 @@ app.put("/campgrounds/:id", async (req, res) => {
 });
 
 app.delete("/campgrounds/:id", async (req, res) => {
+  //Delete a specific campground
   const { id } = req.params;
   const campground = await Campground.findByIdAndDelete(id);
   res.redirect("/campgrounds");
