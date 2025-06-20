@@ -8,5 +8,13 @@ module.exports.campgroundSchema = Joi.object({ // https://joi.dev/api/?v=17.13.3
         image: Joi.string().required(),
         location: Joi.string().required(),
         description: Joi.string().required(),
-    }).required()
+    }).required() // We need to also required the entire key campground
 });
+
+// Define a Joi validation schema for a review object
+module.exports.reviewSchema = Joi.object({
+    review: Joi.object({
+        rating: Joi.number().required().min(1).max(5),
+        body: Joi.string().required()
+    }).required()
+})
