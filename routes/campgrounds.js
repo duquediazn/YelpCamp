@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync'); // Utility function to wrap a
 const ExpressError = require("../utils/ExpressError"); // Custom error class to handle HTTP errors with status codes
 const Campground = require("../models/campground"); // Import the Campground model
 const { campgroundSchema } = require("../schemas") // Import the Joi schema used for validating campground input
+const { isLoggedIn } = require("../middleware")
 
 //Validation
 const validateCampground = (req, res, next) => {
@@ -27,12 +28,12 @@ router.get("/", catchAsync(async (req, res, next) => {
     res.render("campgrounds/index", { campgrounds });
 }));
 
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     // Form to create a new campground
     res.render("campgrounds/new");
 });
 
-router.post("/", validateCampground, catchAsync(async (req, res) => {
+router.post("/", isLoggedIn, validateCampground, catchAsync(async (req, res) => {
     // Create a new campground
     const campground = new Campground(req.body.campground);
     await campground.save();
