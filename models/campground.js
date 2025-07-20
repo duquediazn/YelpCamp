@@ -8,9 +8,12 @@ const CampgroundSchema = new Schema({
   price: Number,
   description: String,
   location: String,
-  // One-to-many: one Campground has many Reviews
   // Stored as array of ObjectId references
-  // Works well for small to moderate number of reviews (e.g., < 30)
+  // Works well for small to moderate number of reviews/users (e.g., < 30)
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
   reviews: [
     {
       type: Schema.Types.ObjectId,

@@ -50,7 +50,7 @@ router.post(
   (req, res) => {
     // If login is successful, show welcome message and redirect
     req.flash("success", "Welcome back!");
-    const redirectUrl = req.locals.returnTo || "/campgrounds";
+    const redirectUrl = res.locals.returnTo || "/campgrounds";
     res.redirect(redirectUrl);
   }
 );
