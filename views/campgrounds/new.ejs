@@ -2,7 +2,7 @@
     <div class="row">
         <h1 class="text-center">New Campground</h1>
         <div class="col-6 offset-3">
-            <form class="needs-validation" action="/campgrounds" method="POST" novalidate>
+            <form class="needs-validation" action="/campgrounds" method="POST" enctype="multipart/form-data" novalidate>
                 <!--For custom Bootstrap form validation messages, we add the novalidate boolean attribute to the form. 
                 This disables the browser default feedback tooltips, but still provides access to the form validation APIs in JavaScript. 
                 Our JavaScript will intercept the submit button and relay feedback to us. 
@@ -19,9 +19,8 @@
                     <div class="valid-feedback">Looks good!</div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="image">Image Url</label>
-                    <input class="form-control" type="text" id="image" name="campground[image]" required>
-                    <div class="valid-feedback">Looks good!</div>
+                    <label for="formFileMultiple" class="form-label">Upload Images</label>
+                    <input class="form-control" type="file" id="formFileMultiple" name="image" multiple>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="price">Campground Price</label>

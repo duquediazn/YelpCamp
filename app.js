@@ -1,3 +1,8 @@
+
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config(); // Require the environment variables in the .env file if we're in development mode
+}
+
 const express = require("express"); // Import the Express framework
 const path = require("path"); // Node module to handle file paths
 const mongoose = require("mongoose"); // Import Mongoose, an ODM library for MongoDB

@@ -1,4 +1,6 @@
+const { cloudinary } = require("../cloudinary");
 const Campground = require("../models/campground"); // Import the Campground model
+const review = require("../models/review");
 
 module.exports.index = async (req, res, next) => {
     // List all campgrounds
@@ -15,6 +17,7 @@ module.exports.createCampground = async (req, res) => {
     // Create a new campground
     const campground = new Campground(req.body.campground);
     campground.author = req.user._id;
+    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     await campground.save();
     req.flash("success", "Successfully made a new campground!") // Flash msg
     res.redirect(`/campgrounds/${campground._id}`);
@@ -47,12 +50,21 @@ module.exports.renderEditForm = async (req, res) => {
     res.render("campgrounds/edit", { campground });
 }
 
-module.exports.editCampground = async (req, res) => {
+module.exports.updateCampground = async (req, res) => {
     //Edit a specific campground
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, {
         ...req.body.campground,
     });
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }))
+    campground.images.push(...imgs);
+    await campground.save();
+    if (req.body.deleteImages) {
+        for (let filname of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filname);
+        }
+        await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+    }
     req.flash("success", "Successfully updated campground!");
     res.redirect(`/campgrounds/${campground._id}`);
 }
@@ -60,7 +72,7 @@ module.exports.editCampground = async (req, res) => {
 module.exports.deleteCampground = async (req, res) => {
     //Delete a specific campground
     const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
+    await Campground.findByIdAndDelete(id);
     req.flash("success", "Campground successfully deleted!")
     res.redirect("/campgrounds");
 }
