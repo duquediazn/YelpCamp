@@ -1,6 +1,9 @@
 const { cloudinary } = require("../cloudinary");
 const Campground = require("../models/campground"); // Import the Campground model
 const review = require("../models/review");
+//MapTiler
+const maptilerClient = require("@maptiler/client");
+maptilerClient.config.apiKey = process.env.MAPTILER_API_KEY;
 
 module.exports.index = async (req, res, next) => {
     // List all campgrounds
@@ -15,7 +18,9 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createCampground = async (req, res) => {
     // Create a new campground
+    const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 }); //MapTiler geocoding
     const campground = new Campground(req.body.campground);
+    campground.geometry = geoData.features[0].geometry; // Store GeoJSON
     campground.author = req.user._id;
     campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     await campground.save();
@@ -56,6 +61,8 @@ module.exports.updateCampground = async (req, res) => {
     const campground = await Campground.findByIdAndUpdate(id, {
         ...req.body.campground,
     });
+    const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 }); //MapTiler geocoding
+    campground.geometry = geoData.features[0].geometry; // Store GeoJSON
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }))
     campground.images.push(...imgs);
     await campground.save();

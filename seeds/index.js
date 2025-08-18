@@ -19,9 +19,16 @@ const seedDB = async () => {
     const random1000 = Math.floor(Math.random() * 1000);
     const randomPrice = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
-      author: '689f8e0db5932856474f4b20',
+      author: '689f8e0db5932856474f4b20', // Mongo needs to have at lest one user already in the DB, paste that user's ID here
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
+      geometry: {
+        type: "Point",
+        coordinates: [
+          cities[random1000].longitude,
+          cities[random1000].latitude,
+        ]
+      },
       images: [
         {
           url: 'https://res.cloudinary.com/dy2nzk6fq/image/upload/v1755286455/YelpCamp/cbe5ryjkycijylbmyciu.jpg',

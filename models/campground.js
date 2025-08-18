@@ -11,9 +11,22 @@ ImageSchema.virtual("thumbnail").get(function () {
   return this.url.replace("/upload", "/upload/w_200");
 })
 
+//const opts = { toJSON: { virtuals: true } };
+
 const CampgroundSchema = new Schema({
   title: String,
   images: [ImageSchema],
+  geometry: { // GeoJSON format
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
   price: Number,
   description: String,
   location: String,
@@ -29,7 +42,7 @@ const CampgroundSchema = new Schema({
       ref: "Review"
     }
   ]
-});
+}/*, opts*/);
 
 // Cascade delete middleware:
 // This middleware removes all the reviews of a given campground after the campground itself has been deleted
