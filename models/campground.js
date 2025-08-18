@@ -11,7 +11,9 @@ ImageSchema.virtual("thumbnail").get(function () {
   return this.url.replace("/upload", "/upload/w_200");
 })
 
-//const opts = { toJSON: { virtuals: true } };
+/* By default Mongoose does not include virtuals when converting a document to JSON. 
+To include virtuals we need to set the toJSON schema option to true and pass it as an argument.*/
+const opts = { toJSON: { virtuals: true } };
 
 const CampgroundSchema = new Schema({
   title: String,
@@ -42,7 +44,11 @@ const CampgroundSchema = new Schema({
       ref: "Review"
     }
   ]
-}/*, opts*/);
+}, opts /*To include the virtual popUpMarkup*/);
+
+CampgroundSchema.virtual("properties.popUpMarkup").get(function () {
+  return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong><p>${this.description.substring(0, 30)}...</p>`
+})
 
 // Cascade delete middleware:
 // This middleware removes all the reviews of a given campground after the campground itself has been deleted

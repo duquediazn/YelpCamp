@@ -8,6 +8,7 @@ const map = new maptilersdk.Map({
 });
 
 map.on('load', function () {
+
     map.addSource('campgrounds', {
         type: 'geojson',
         data: campgrounds,
@@ -90,7 +91,6 @@ map.on('load', function () {
     map.on('click', 'unclustered-point', function (e) {
         const { popUpMarkup } = e.features[0].properties;
         const coordinates = e.features[0].geometry.coordinates.slice();
-
         // Ensure that if the map is zoomed out such that
         // multiple copies of the feature are visible, the
         // popup appears over the copy being pointed to.
