@@ -88,8 +88,8 @@ app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 app.get("/", (req, res) => {
-  // Main route, welcome message
-  res.send("Hello from YelpCamp!");
+  // Main route, home view
+  res.render("./home");
 });
 
 app.all(/(.*)/, (req, res, next) => {
