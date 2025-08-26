@@ -14,6 +14,8 @@ const methodOverride = require("method-override"); // Import method-override to 
 const passport = require("passport"); // Import Passport authentication middleware
 const LocalStrategy = require("passport-local"); // Import Passport strategy for authenticating with a username and password.
 const User = require("./models/user"); // Import the User model
+const mongoSanitize = require('express-mongo-sanitize'); // To prevent mongo injection
+
 
 // Route files
 const userRoutes = require("./routes/users");
@@ -47,6 +49,7 @@ app.use(
   "/bootstrap",
   express.static(path.join(__dirname, "node_modules/bootstrap/dist"))
 );
+app.use(mongoSanitize())
 
 // Express-session middleware
 const sessionConfig = {
@@ -75,7 +78,7 @@ passport.deserializeUser(User.deserializeUser());
 
 //This middleware is used to make certain variables available in all views (templates) of the app
 app.use((req, res, next) => {
-  console.log(req.session);
+  //console.log(req.session);
   res.locals.currentUser = req.user; // Makes the currently authenticated user (from Passport) available in all templates as currentUser.
   res.locals.success = req.flash("success"); // Retrieves any "success" flash messages and makes them available in views as success.
   res.locals.error = req.flash("error"); // Same as above, but for "error" messages.
