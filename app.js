@@ -53,11 +53,13 @@ app.use(mongoSanitize())
 
 // Express-session middleware
 const sessionConfig = {
+  name: "session", // Session cookie name, is more secure to change its default name 'connect.sid'
   secret: "thisshouldbeabettersecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
-    httpOnly: true,
+    httpOnly: true, // Session cookie not accesible via javascript
+    // secure: true // Only HTTPS, uncomment for production
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week in miliseconds
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
