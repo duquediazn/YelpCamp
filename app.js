@@ -8,6 +8,7 @@ const path = require("path"); // Node module to handle file paths
 const mongoose = require("mongoose"); // Import Mongoose, an ODM library for MongoDB
 const engine = require("ejs-mate"); // Import ejs-mate, Express 4.x layout, partial template functions for the EJS template engine. Docs: https://github.com/JacksonTian/ejs-mate
 const session = require("express-session"); // Import middleware to manage user sessions in Express
+const MongoStore = require('connect-mongo'); // // Use connect-mongo to persist Express sessions in MongoDB
 const flash = require("connect-flash"); // Import package to add flash message support (this middleware depends on sessions)
 const ExpressError = require("./utils/ExpressError"); // Custom error class to handle HTTP errors with status codes
 const methodOverride = require("method-override"); // Import method-override to enable HTTP verbs like PUT and DELETE in forms
@@ -24,7 +25,9 @@ const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 
 // Database connection
-mongoose.connect("mongodb://localhost:27017/yelp-camp");
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp'; // Mongo Atlas or Mongo local DB
+mongoose.connect(dbUrl)
+
 
 // Error handling for the connection
 const db = mongoose.connection; // Active Mongoose connection
@@ -50,12 +53,29 @@ app.use(
   "/bootstrap",
   express.static(path.join(__dirname, "node_modules/bootstrap/dist"))
 );
-app.use(mongoSanitize())
+app.use(mongoSanitize({
+  replaceWith: '_'
+})) // Sanitize request data to prevent MongoDB operator injection by replacing disallowed characters
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
+const store = MongoStore.create({ // Configure the MongoDB-backed session store for express-session
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60, //in seconds
+  crypto: {
+    secret
+  }
+});
+
+store.on("error", function (e) {
+  console.log("Session Store Error", e);
+})
 
 // Express-session middleware
 const sessionConfig = {
+  store, // Store sessions in MongoDB so they survive server restarts and scale across instances
   name: "session", // Session cookie name, is more secure to change its default name 'connect.sid'
-  secret: "thisshouldbeabettersecret",
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -68,16 +88,16 @@ const sessionConfig = {
 app.use(session(sessionConfig)); // This shoud be used BEFORE using passport.session()
 
 app.use(flash()); // We’re using the connect-flash package to add flash message support.
-app.use(helmet());
+app.use(helmet()); // Apply secure HTTP headers with Helmet as a baseline protection 
 
-const scriptSrcUrls = [
+const scriptSrcUrls = [ // Whitelist external script sources for the Content Security Policy (CSP)
   "https://stackpath.bootstrapcdn.com/",
   "https://kit.fontawesome.com/",
   "https://cdnjs.cloudflare.com/",
   "https://cdn.jsdelivr.net",
   "https://cdn.maptiler.com/",
 ];
-const styleSrcUrls = [
+const styleSrcUrls = [ // Whitelist external style sources for the CSP
   "https://kit-free.fontawesome.com/",
   "https://stackpath.bootstrapcdn.com/",
   "https://fonts.googleapis.com/",
@@ -85,11 +105,11 @@ const styleSrcUrls = [
   "https://cdn.jsdelivr.net",
   "https://cdn.maptiler.com/",
 ];
-const connectSrcUrls = [
+const connectSrcUrls = [ // Whitelist network endpoints (fetch/XHR/WebSocket) for the CSP
   "https://api.maptiler.com/",
 ];
 
-const fontSrcUrls = [];
+const fontSrcUrls = []; // Whitelist external font sources for the CSP (empty means only 'self' unless updated)
 
 // Helmet CSP configuration
 app.use(helmet.contentSecurityPolicy({

@@ -3,7 +3,13 @@ const cities = require("./cities");
 const { places, descriptors } = require("./seedHelpers");
 const Campground = require("../models/campground");
 
+// Database connection
+// Local:
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
+// Production:
+// const dbUrl = process.env.DB_URL // Remote DB URL
+// mongoose.connect(dbUrl) // Atlas
+
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -19,7 +25,7 @@ const seedDB = async () => {
     const random1000 = Math.floor(Math.random() * 1000);
     const randomPrice = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
-      author: '689f8e0db5932856474f4b20', // Mongo needs to have at lest one user already in the DB, paste that user's ID here
+      author: '68b71360964619ae3a4a45b6', // Mongo needs to have at lest one user already in the DB, paste that user's ID here
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
       geometry: {
